@@ -30,27 +30,49 @@
     <script>
         const API_URL = "AKfycbxakKGY9RzjPkAFcL63i8BT_DVEvVKrsqBcHwbLDZaI8oXfBPufwXPFADAwGwVxZkw"; // Ganti dengan URL Web App
 
-        async function fetchData() {
-            const response = await fetch(API_URL);
-            const data = await response.json();
-            const resiData = data[0]; // Ambil data pertama
+       async function fetchData() {
+    try {
+        console.log("Fetching data from:", API_URL); // Debugging URL
 
-            document.getElementById("resi").textContent = resiData.resi;
-            document.getElementById("pengirim").textContent = resiData.pengirim;
-            document.getElementById("penerima").textContent = resiData.penerima;
-            document.getElementById("alamat").textContent = resiData.alamat;
-            document.getElementById("produk").textContent = resiData.produk;
-            document.getElementById("berat").textContent = resiData.berat;
-            document.getElementById("ongkir").textContent = resiData.ongkir;
+        const response = await fetch(API_URL);
 
-            // Generate barcode
-            JsBarcode("#barcode", resiData.barcode, {
-                format: "CODE128",
-                displayValue: true
-            });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        fetchData();
+        const text = await response.text(); // Baca respons API sebagai teks dulu
+        console.log("Response from API:", text); // Debugging isi respons
+
+        const data = JSON.parse(text); // Konversi ke JSON
+
+        if (data.length === 0) {
+            alert("Data tidak ditemukan di spreadsheet!");
+            return;
+        }
+
+        const resiData = data[0]; // Ambil data pertama
+        document.getElementById("resi").textContent = resiData.resi;
+        document.getElementById("pengirim").textContent = resiData.pengirim;
+        document.getElementById("penerima").textContent = resiData.penerima;
+        document.getElementById("alamat").textContent = resiData.alamat;
+        document.getElementById("produk").textContent = resiData.produk;
+        document.getElementById("berat").textContent = resiData.berat;
+        document.getElementById("ongkir").textContent = resiData.ongkir;
+
+        // Generate barcode
+        JsBarcode("#barcode", resiData.barcode, {
+            format: "CODE128",
+            displayValue: true
+        });
+
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        alert("Gagal mengambil data. Periksa koneksi atau URL API.");
+    }
+}
+
+fetchData();
+
     </script>
 <br>
 <button onclick="window.print()">Cetak Resi</button>

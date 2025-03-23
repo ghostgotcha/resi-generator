@@ -1,3 +1,5 @@
+const API_URL = "https://script.google.com/macros/s/AKfycbxyC2NTBBgYZ5AXIQeTSAEruYjKBDpzq3BOTyglCQ/exec"; // BENAR ✅
+
 async function fetchResiData() {
     try {
         let response = await fetch("https://script.google.com/macros/s/AKfycbxakKGY9RzjPkAFcL63i8BT_DVEvVKrsqBcHwbLDZaI8oXfBPufwXPFADAwGwVxZkw/exec");
