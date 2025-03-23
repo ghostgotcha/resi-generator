@@ -28,56 +28,38 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxyC2NTBBgYZ5AXIQeTSAEruYjKBDpzq3BOTyglCQ/exec"; // BENAR ✅
-
-
-       async function fetchData() {
-    try {
-        console.log("Fetching data from:", API_URL); // Debugging URL
-
-        const response = await fetch(API_URL);
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+        function fetchData() {
+            var script = document.createElement("script");
+            script.src = "https://script.google.com/macros/s/AKfycbxyC2NTBBgYZ5AXIQeTSAEruYjKBDpzq3BOTyglCQ/exec?callback=handleData";
+            document.body.appendChild(script);
         }
 
-        const text = await response.text(); // Baca respons API sebagai teks dulu
-        console.log("Response from API:", text); // Debugging isi respons
+        function handleData(data) {
+            if (!data || data.length === 0) {
+                alert("Data tidak ditemukan!");
+                return;
+            }
 
-        const data = JSON.parse(text); // Konversi ke JSON
+            const resiData = data[0]; // Ambil data pertama
+            document.getElementById("resi").textContent = resiData.resi;
+            document.getElementById("pengirim").textContent = resiData.pengirim;
+            document.getElementById("penerima").textContent = resiData.penerima;
+            document.getElementById("alamat").textContent = resiData.alamat;
+            document.getElementById("produk").textContent = resiData.produk;
+            document.getElementById("berat").textContent = resiData.berat;
+            document.getElementById("ongkir").textContent = resiData.ongkir;
 
-        if (data.length === 0) {
-            alert("Data tidak ditemukan di spreadsheet!");
-            return;
+            // Generate barcode
+            JsBarcode("#barcode", resiData.barcode, {
+                format: "CODE128",
+                displayValue: true
+            });
         }
 
-        const resiData = data[0]; // Ambil data pertama
-        document.getElementById("resi").textContent = resiData.resi;
-        document.getElementById("pengirim").textContent = resiData.pengirim;
-        document.getElementById("penerima").textContent = resiData.penerima;
-        document.getElementById("alamat").textContent = resiData.alamat;
-        document.getElementById("produk").textContent = resiData.produk;
-        document.getElementById("berat").textContent = resiData.berat;
-        document.getElementById("ongkir").textContent = resiData.ongkir;
-
-        // Generate barcode
-        JsBarcode("#barcode", resiData.barcode, {
-            format: "CODE128",
-            displayValue: true
-        });
-
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        alert("Gagal mengambil data. Periksa koneksi atau URL API.");
-    }
-}
-
-fetchData();
-
+        fetchData(); // Panggil saat halaman dimuat
     </script>
-<br>
-<button onclick="window.print()">Cetak Resi</button>
 
+    <br>
+    <button onclick="window.print()">Cetak Resi</button>
 </body>
-
 </html>
