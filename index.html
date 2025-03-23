@@ -3,19 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Resi</title>
+    <title>Resi Pengiriman</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .resi-container { width: 400px; border: 1px solid #000; padding: 10px; margin: auto; }
+        .barcode { font-size: 20px; font-weight: bold; }
+        .info { text-align: left; margin-top: 10px; }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Generator Resi</h2>
-    
-    <label>Nomor Resi:</label>
-    <input type="text" id="resiInput" placeholder="Masukkan Nomor Resi">
-    <button onclick="generateBarcode()">Buat Barcode</button>
+    <h2>Resi Pengiriman</h2>
+    <div class="resi-container">
+        <svg id="barcode"></svg>
+        <div class="info">
+            <p><strong>Resi:</strong> <span id="resi"></span></p>
+            <p><strong>Pengirim:</strong> <span id="pengirim"></span></p>
+            <p><strong>Penerima:</strong> <span id="penerima"></span></p>
+            <p><strong>Alamat:</strong> <span id="alamat"></span></p>
+            <p><strong>Produk:</strong> <span id="produk"></span></p>
+            <p><strong>Berat:</strong> <span id="berat"></span></p>
+            <p><strong>Ongkir:</strong> Rp<span id="ongkir"></span></p>
+        </div>
+    </div>
 
-    <svg id="barcode"></svg>
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbx.../exec"; // Ganti dengan URL Web App
 
-    <script src="script.js"></script>
+        async function fetchData() {
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            const resiData = data[0]; // Ambil data pertama
+
+            document.getElementById("resi").textContent = resiData.resi;
+            document.getElementById("pengirim").textContent = resiData.pengirim;
+            document.getElementById("penerima").textContent = resiData.penerima;
+            document.getElementById("alamat").textContent = resiData.alamat;
+            document.getElementById("produk").textContent = resiData.produk;
+            document.getElementById("berat").textContent = resiData.berat;
+            document.getElementById("ongkir").textContent = resiData.ongkir;
+
+            // Generate barcode
+            JsBarcode("#barcode", resiData.barcode, {
+                format: "CODE128",
+                displayValue: true
+            });
+        }
+
+        fetchData();
+    </script>
 </body>
 </html>
